@@ -14,12 +14,15 @@
 #![feature(panic_info_message)]
 
 use core::arch::global_asm;
+use log::{info,warn,error};
 
 #[macro_use]
 mod console;
 mod lang_items;
 mod sbi;
-
+mod logging;
+mod arch;
+use crate::logging::init;
 #[cfg(feature = "board_qemu")]
 #[path = "boards/qemu.rs"]
 mod board;
@@ -51,15 +54,19 @@ pub fn rust_main() -> ! {
         fn boot_stack_top(); // stack top
     }
     clear_bss();
-    println!("Hello, world!");
-    println!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
-    println!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
-    println!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
-    println!(
+    init();
+    info!("HELLO WORLD");
+    warn!("HELLO WORLD");
+    error!("HELLO WORLD");
+
+    info!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
+    info!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
+    info!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
+    info!(
         "boot_stack [{:#x}, {:#x})",
         boot_stack as usize, boot_stack_top as usize
     );
-    println!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
+    info!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
 
     #[cfg(feature = "board_qemu")]
     use crate::board::QEMUExit;
